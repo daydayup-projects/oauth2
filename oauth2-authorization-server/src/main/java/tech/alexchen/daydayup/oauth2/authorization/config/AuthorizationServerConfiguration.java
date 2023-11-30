@@ -43,82 +43,94 @@ import java.util.UUID;
 @EnableWebSecurity
 public class AuthorizationServerConfiguration {
 
-    @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        http.formLogin(Customizer.withDefaults());
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
-    public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults());
-        return http.build();
-    }
-
-    @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient loginClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("zeus")
-                .clientSecret("{noop}zeus")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://auth-client:8080/login/oauth2/code/zeus")
-                .redirectUri("http://www.alexchen.tech")
-                .scope(OidcScopes.OPENID)
-                .scope("all")
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-                .build();
-        return new InMemoryRegisteredClientRepository(loginClient);
-    }
-
-    @Bean
-    UserDetailsService users() {
-        UserDetails user = User.builder()
-                .username("admin")
-                .password("{noop}123456")
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
-    public AuthorizationServerSettings providerSettings() {
-        return AuthorizationServerSettings.builder().issuer("http://auth-server:9000").build();
-    }
-
-    @Bean
-    public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
-        JWKSet jwkSet = new JWKSet(rsaKey);
-        return new ImmutableJWKSet<>(jwkSet);
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder(KeyPair keyPair) {
-        return NimbusJwtDecoder.withPublicKey((RSAPublicKey) keyPair.getPublic()).build();
-    }
-
-    @Bean
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    KeyPair generateRsaKey() {
-        KeyPair keyPair;
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            keyPair = keyPairGenerator.generateKeyPair();
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+        @Bean
+        @Order(1)
+        public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+            OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+            return http.formLogin(Customizer.withDefaults()).build();
         }
-        return keyPair;
-    }
+
+        @Bean
+        @Order(2)
+        public SecurityFilterChain standardSecurityFilterChain(HttpSecurity http) throws Exception {
+            http
+                    .authorizeHttpRequests((authorize) -> authorize
+                            .anyRequest().authenticated()
+                    )
+                    .formLogin(Customizer.withDefaults());
+            return http.build();
+        }
+
+//        @Bean
+//        public RegisteredClientRepository registeredClientRepository() {
+//            RegisteredClient loginClient = RegisteredClient.withId(UUID.randomUUID().toString())
+//                    .clientId("login-client")
+//                    .clientSecret("{noop}openid-connect")
+//                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                    .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+//                    .redirectUri("http://127.0.0.1:8080/login/oauth2/code/login-client")
+//                    .redirectUri("http://127.0.0.1:8080/authorized")
+//                    .scope(OidcScopes.OPENID)
+//                    .scope(OidcScopes.PROFILE)
+//                    .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+//                    .build();
+//            RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+//                    .clientId("messaging-client")
+//                    .clientSecret("{noop}secret")
+//                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//                    .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+//                    .scope("message:read")
+//                    .scope("message:write")
+//                    .build();
+//            return new InMemoryRegisteredClientRepository(loginClient, registeredClient);
+//        }
+
+        @Bean
+        public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
+            RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+            RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+            RSAKey rsaKey = new RSAKey.Builder(publicKey)
+                    .privateKey(privateKey)
+                    .keyID(UUID.randomUUID().toString())
+                    .build();
+            JWKSet jwkSet = new JWKSet(rsaKey);
+            return new ImmutableJWKSet<>(jwkSet);
+        }
+
+        @Bean
+        public JwtDecoder jwtDecoder(KeyPair keyPair) {
+            return NimbusJwtDecoder.withPublicKey((RSAPublicKey) keyPair.getPublic()).build();
+        }
+
+        @Bean
+        public AuthorizationServerSettings providerSettings() {
+            return AuthorizationServerSettings.builder().issuer("http://localhost:9000").build();
+        }
+
+        @Bean
+        public UserDetailsService userDetailsService() {
+            UserDetails userDetails = User.withDefaultPasswordEncoder()
+                    .username("admin")
+                    .password("123456")
+                    .roles("USER")
+                    .build();
+            return new InMemoryUserDetailsManager(userDetails);
+        }
+
+        @Bean
+        @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+        KeyPair generateRsaKey() {
+            KeyPair keyPair;
+            try {
+                KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+                keyPairGenerator.initialize(2048);
+                keyPair = keyPairGenerator.generateKeyPair();
+            }
+            catch (Exception ex) {
+                throw new IllegalStateException(ex);
+            }
+            return keyPair;
+        }
+
 }

@@ -9,8 +9,6 @@
     </parent>
     <artifactId>oauth2-resource-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>authorization-resource-server</name>
-    <description>authorization-resource-server</description>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
