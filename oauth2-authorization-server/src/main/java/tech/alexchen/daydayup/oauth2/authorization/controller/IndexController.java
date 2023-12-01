@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @author alexchen
  */
 @RestController
-public class HelloController {
+public class IndexController {
 
-    @GetMapping("/hello")
+    @GetMapping("/")
     public Object hello() {
         return SecurityContextHolder.getContext().getAuthentication();
     }

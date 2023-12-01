@@ -1,39 +1,32 @@
 server:
-  port: 8080
-
-spring:
-  thymeleaf:
-    cache: false
-  security:
-    oauth2:
-      client:
-        registration:
-          zeus:
-            provider: zeus
-            client-id: zeus
-            client-secret: zeus
-            client-authentication-method: client_secret_basic
-            authorization-grant-type: authorization_code
-            redirect-uri: http://127.0.0.1:8080/login/oauth2/code/zeus
-            scope: all
-            client-name: Zeus
-          github:
-            client-name: Github
-            client-id: 03c2848fb943cb18ec63
-            client-secret: 923990158137b3a58e1166605938bd1d16886f99
-            redirect-uri: http://127.0.0.1:8080/login/oauth2/code/github
-            scope:
-              - user:email
-              - read:user
-        provider:
-          zeus:
-            issuer-uri: http://192.168.0.100:9000
-#            authorization-uri: http://192.168.0.100:9000/oauth2/authorize
-#            token-uri: http://192.168.0.100:9000/oauth2/token
-#            jwk-set-uri: http://192.168.0.100:9000/oauth2/jwks
-#            user-info-uri: http://192.168.0.100:9000/oauth2/userinfo
-#            user-name-attribute: sub
+  port: 9999
 
 logging:
   level:
     org.springframework.security: trace
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          client:
+            provider: client
+            client-id: client
+            client-name: client
+            client-secret: client
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: http://127.0.0.1:9999/login/oauth2/code/client
+            scope: user.read,openid
+          github:
+            client-name: Github
+            client-id: 03c2848fb943cb18ec63
+            client-secret: 923990158137b3a58e1166605938bd1d16886f99
+            redirect-uri: http://127.0.0.1:9999/login/oauth2/code/github
+            scope:
+              - user:email
+              - read:user
+        provider:
+          client:
+            issuer-uri: http://localhost:9000
