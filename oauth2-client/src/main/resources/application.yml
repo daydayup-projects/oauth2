@@ -27,11 +27,12 @@ spring:
               - read:user
         provider:
           zeus:
-            authorization-uri: http://192.168.0.100:9000/oauth2/authorize
-            token-uri: http://192.168.0.100:9000/oauth2/token
-            jwk-set-uri: http://192.168.0.100:9000/oauth2/jwks
-            user-info-uri: http://192.168.0.100:9000/oauth2/userinfo
-            user-name-attribute: sub
+            issuer-uri: http://192.168.0.100:9000
+#            authorization-uri: http://192.168.0.100:9000/oauth2/authorize
+#            token-uri: http://192.168.0.100:9000/oauth2/token
+#            jwk-set-uri: http://192.168.0.100:9000/oauth2/jwks
+#            user-info-uri: http://192.168.0.100:9000/oauth2/userinfo
+#            user-name-attribute: sub
 
 logging:
   level:

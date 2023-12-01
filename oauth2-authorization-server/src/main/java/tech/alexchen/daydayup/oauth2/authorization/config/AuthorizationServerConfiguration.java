@@ -25,6 +25,7 @@ import org.springframework.security.oauth2.server.authorization.client.InMemoryR
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -47,6 +48,8 @@ public class AuthorizationServerConfiguration {
         @Order(1)
         public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
             OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+            http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+                    .oidc(Customizer.withDefaults()).disable();
             return http.formLogin(Customizer.withDefaults()).build();
         }
 
@@ -60,31 +63,6 @@ public class AuthorizationServerConfiguration {
                     .formLogin(Customizer.withDefaults());
             return http.build();
         }
-
-//        @Bean
-//        public RegisteredClientRepository registeredClientRepository() {
-//            RegisteredClient loginClient = RegisteredClient.withId(UUID.randomUUID().toString())
-//                    .clientId("login-client")
-//                    .clientSecret("{noop}openid-connect")
-//                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-//                    .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-//                    .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-//                    .redirectUri("http://127.0.0.1:8080/login/oauth2/code/login-client")
-//                    .redirectUri("http://127.0.0.1:8080/authorized")
-//                    .scope(OidcScopes.OPENID)
-//                    .scope(OidcScopes.PROFILE)
-//                    .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-//                    .build();
-//            RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-//                    .clientId("messaging-client")
-//                    .clientSecret("{noop}secret")
-//                    .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-//                    .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-//                    .scope("message:read")
-//                    .scope("message:write")
-//                    .build();
-//            return new InMemoryRegisteredClientRepository(loginClient, registeredClient);
-//        }
 
         @Bean
         public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
