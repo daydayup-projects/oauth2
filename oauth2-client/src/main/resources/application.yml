@@ -18,7 +18,7 @@ spring:
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
             redirect-uri: http://127.0.0.1:9999/login/oauth2/code/client
-            scope: user.read,openid
+            scope: read,openid
           github:
             client-name: Github
             client-id: 03c2848fb943cb18ec63
@@ -30,3 +30,4 @@ spring:
         provider:
           client:
             issuer-uri: http://localhost:9000
+

@@ -11,6 +11,9 @@ spring:
       authorizationserver:
         client:
           client:
+            token:
+              accessTokenFormat: reference # 使用 opaqueToken
+              access-token-time-to-live: 12h
             registration:
               client-id: client
               client-secret: "{noop}client"
@@ -19,7 +22,7 @@ spring:
                 - authorization_code
                 - refresh_token
                 - client_credentials
-              scopes: user.read,user.write,openid
+              scopes: read,write,openid
               redirect-uris:
                 - http://127.0.0.1:9999/login/oauth2/code/client
             require-authorization-consent: true
