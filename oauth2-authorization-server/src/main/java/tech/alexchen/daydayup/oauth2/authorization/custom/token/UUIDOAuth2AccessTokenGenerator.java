@@ -25,9 +25,6 @@ import java.util.UUID;
  */
 public class UUIDOAuth2AccessTokenGenerator implements OAuth2TokenGenerator<OAuth2AccessToken> {
 
-    /**
-     * 仅仅改了这里
-     */
     private final StringKeyGenerator accessTokenGenerator = new UUIDKeyGenerator();
     private OAuth2TokenCustomizer<OAuth2TokenClaimsContext> accessTokenCustomizer;
 

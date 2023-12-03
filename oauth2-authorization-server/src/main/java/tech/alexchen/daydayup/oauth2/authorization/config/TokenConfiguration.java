@@ -10,15 +10,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
-import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
-import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import tech.alexchen.daydayup.oauth2.authorization.custom.token.CustomOAuth2TokenCustomizer;
-import tech.alexchen.daydayup.oauth2.authorization.custom.token.UUIDOAuth2RefreshTokenGenerator;
 import tech.alexchen.daydayup.oauth2.authorization.custom.token.UUIDOAuth2AccessTokenGenerator;
+import tech.alexchen.daydayup.oauth2.authorization.custom.token.UUIDOAuth2RefreshTokenGenerator;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -33,27 +33,15 @@ public class TokenConfiguration {
      * 注入自定义的 opaqueToken 生成器，用于生成较短的 access_token 和 refresh_token
      */
     @Bean
-    public OAuth2TokenGenerator<?> oAuth2TokenGenerator() {
+    public OAuth2TokenGenerator<?> oAuth2TokenGenerator(JWKSource<SecurityContext> jwkSource) {
+        JwtEncoder jwtEncoder = new NimbusJwtEncoder(jwkSource);
+        JwtGenerator jwtGenerator = new JwtGenerator(jwtEncoder);
+
         UUIDOAuth2AccessTokenGenerator uuidOAuth2AccessTokenGenerator = new UUIDOAuth2AccessTokenGenerator();
         uuidOAuth2AccessTokenGenerator.setAccessTokenCustomizer(new CustomOAuth2TokenCustomizer());
-        UUIDOAuth2RefreshTokenGenerator uuidOAuth2RefreshTokenGenerator = new UUIDOAuth2RefreshTokenGenerator();
-        return new DelegatingOAuth2TokenGenerator(uuidOAuth2AccessTokenGenerator,
-                uuidOAuth2RefreshTokenGenerator);
-    }
 
-    /**
-     * ACCESS_TOKEN Claims 自定义增强
-     */
-    @Bean
-    public OAuth2TokenCustomizer<JwtEncodingContext> jwtTokenCustomizer() {
-        return (context) -> {
-            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
-                context.getClaims().claims((claims) -> {
-                    claims.put("claim-1", "value-1");
-                    claims.put("claim-2", "value-2");
-                });
-            }
-        };
+        UUIDOAuth2RefreshTokenGenerator uuidOAuth2RefreshTokenGenerator = new UUIDOAuth2RefreshTokenGenerator();
+        return new DelegatingOAuth2TokenGenerator(uuidOAuth2AccessTokenGenerator, uuidOAuth2RefreshTokenGenerator, jwtGenerator);
     }
 
     /**

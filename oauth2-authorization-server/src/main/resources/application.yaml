@@ -4,26 +4,3 @@ server:
 logging:
   level:
     org.springframework.security: trace
-
-spring:
-  security:
-    oauth2:
-      authorizationserver:
-        client:
-          client:
-            token:
-              accessTokenFormat: reference # 使用 opaqueToken
-              access-token-time-to-live: 12h
-            registration:
-              client-id: client
-              client-secret: "{noop}client"
-              client-authentication-methods: client_secret_basic
-              authorization-grant-types:
-                - authorization_code
-                - refresh_token
-                - client_credentials
-              scopes: read,write,openid
-              redirect-uris:
-                - http://127.0.0.1:9999/login/oauth2/code/client
-            require-authorization-consent: true
-        issuer: http://localhost:9000
