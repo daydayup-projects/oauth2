@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import tech.alexchen.daydayup.oauth2.authorization.custom.provider.CustomAuthenticationProvider;
 
 /**
  * @author alexchen
@@ -38,6 +39,7 @@ public class AuthorizationServerConfiguration {
                         new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                 )
         );
+        http.authenticationProvider(new CustomAuthenticationProvider());
         return http.build();
     }
 
