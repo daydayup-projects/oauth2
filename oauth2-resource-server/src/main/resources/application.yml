@@ -9,8 +9,6 @@ spring:
   security:
     oauth2:
       resourceserver:
-#        jwt:
-#          issuer-uri: http://localhost:9000
         opaque-token:
           introspection-uri: http://localhost:9000/oauth2/introspect
           client-id: client
