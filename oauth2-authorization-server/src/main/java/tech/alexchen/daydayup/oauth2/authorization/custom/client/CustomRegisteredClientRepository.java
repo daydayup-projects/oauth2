@@ -31,6 +31,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                     authorizationGrantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
                     authorizationGrantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
                     authorizationGrantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
+                    authorizationGrantTypes.add(AuthorizationGrantType.PASSWORD);
                 })
                 .redirectUri("http://127.0.0.1:9999/login/oauth2/code/client")
                 .scope(OidcScopes.OPENID)
