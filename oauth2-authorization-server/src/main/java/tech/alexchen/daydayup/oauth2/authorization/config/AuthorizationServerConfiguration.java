@@ -19,7 +19,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
@@ -33,12 +32,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import tech.alexchen.daydayup.oauth2.authorization.custom.provider.CustomAuthenticationProvider;
-import tech.alexchen.daydayup.oauth2.authorization.custom.token.CustomOAuth2TokenCustomizer;
-import tech.alexchen.daydayup.oauth2.authorization.custom.token.UUIDOAuth2AccessTokenGenerator;
-import tech.alexchen.daydayup.oauth2.authorization.custom.token.UUIDOAuth2RefreshTokenGenerator;
-import tech.alexchen.daydayup.oauth2.authorization.grant.password.OAuth2UsernamePasswordAuthenticationConverter;
-import tech.alexchen.daydayup.oauth2.authorization.grant.password.OAuth2UsernamePasswordAuthenticationProvider;
+import tech.alexchen.daydayup.oauth2.authorization.oauth2.password.OAuth2UsernamePasswordAuthenticationConverter;
+import tech.alexchen.daydayup.oauth2.authorization.oauth2.password.OAuth2UsernamePasswordAuthenticationProvider;
+import tech.alexchen.daydayup.oauth2.authorization.oauth2.token.CustomOAuth2TokenCustomizer;
+import tech.alexchen.daydayup.oauth2.authorization.oauth2.token.UUIDOAuth2AccessTokenGenerator;
+import tech.alexchen.daydayup.oauth2.authorization.oauth2.token.UUIDOAuth2RefreshTokenGenerator;
+import tech.alexchen.daydayup.oauth2.authorization.security.CustomUserDetailsAuthenticationProvider;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -60,10 +59,10 @@ public class AuthorizationServerConfiguration {
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .oidc(Customizer.withDefaults())
                 .authorizationServerSettings(
-                        // 指明为 localhost，就不会自动配置为本机的内网 ip，防止 client 和 resource 因为端点不一致导致的错误
+                        // 指明为 localhost，就不会自动配置为本机的内网 ip，从而导致资源服务器和客户端的错误，生产环境应使用域名或配置 hosts
                         AuthorizationServerSettings.builder().issuer("http://localhost:9000").build()
                 )
-                .authorizationService(new InMemoryOAuth2AuthorizationService())
+//                .authorizationService(new InMemoryOAuth2AuthorizationService())
                 .tokenEndpoint((tokenEndpoint) -> tokenEndpoint.accessTokenRequestConverter(accessTokenRequestConverter()))
         ;
         http.exceptionHandling((exceptions) -> exceptions
@@ -76,16 +75,13 @@ public class AuthorizationServerConfiguration {
         // 先 build，后面才可以通过 http.getSharedObject 方法获取到 AuthenticationManager
         DefaultSecurityFilterChain securityFilterChain = http.build();
 
-        // 表单认证使用自定义 provider，处理 UsernamePasswordAuthenticationToken
-        http.authenticationProvider(new CustomAuthenticationProvider());
-
-        // 添加 oauth2 的密码模式，处理 OAuth2UsernamePasswordAuthenticationToken
         addCustomOAuth2GrantAuthenticationProvider(http);
         return securityFilterChain;
     }
 
     /**
      * request -> xToken 注入请求转换器
+     *
      * @return DelegatingAuthenticationConverter
      */
     public AuthenticationConverter accessTokenRequestConverter() {
@@ -98,11 +94,14 @@ public class AuthorizationServerConfiguration {
     }
 
     public void addCustomOAuth2GrantAuthenticationProvider(HttpSecurity http) {
+        // 表单认证使用自定义 provider，处理 UsernamePasswordAuthenticationToken
+        http.authenticationProvider(new CustomUserDetailsAuthenticationProvider());
+
+        // 添加 oauth2 的密码模式，处理 OAuth2UsernamePasswordAuthenticationToken
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
         OAuth2AuthorizationService authorizationService = http.getSharedObject(OAuth2AuthorizationService.class);
-
-        OAuth2UsernamePasswordAuthenticationProvider customProvider =
-                new OAuth2UsernamePasswordAuthenticationProvider(authorizationService, oAuth2TokenGenerator(), authenticationManager);
+        OAuth2UsernamePasswordAuthenticationProvider customProvider = new OAuth2UsernamePasswordAuthenticationProvider(
+                authorizationService, oAuth2TokenGenerator(), authenticationManager);
         http.authenticationProvider(customProvider);
     }
 

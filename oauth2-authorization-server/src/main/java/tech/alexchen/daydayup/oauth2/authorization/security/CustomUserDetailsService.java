@@ -1,4 +1,4 @@
-package tech.alexchen.daydayup.oauth2.authorization.custom.user;
+package tech.alexchen.daydayup.oauth2.authorization.security;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

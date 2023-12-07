@@ -1,4 +1,4 @@
-package tech.alexchen.daydayup.oauth2.authorization.grant.password;
+package tech.alexchen.daydayup.oauth2.authorization.oauth2.password;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

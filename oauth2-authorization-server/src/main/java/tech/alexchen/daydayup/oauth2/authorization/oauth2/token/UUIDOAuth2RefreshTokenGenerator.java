@@ -1,4 +1,4 @@
-package tech.alexchen.daydayup.oauth2.authorization.custom.token;
+package tech.alexchen.daydayup.oauth2.authorization.oauth2.token;
 
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;

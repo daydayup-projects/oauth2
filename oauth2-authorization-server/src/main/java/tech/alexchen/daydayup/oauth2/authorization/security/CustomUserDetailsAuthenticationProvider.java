@@ -1,4 +1,4 @@
-package tech.alexchen.daydayup.oauth2.authorization.custom.provider;
+package tech.alexchen.daydayup.oauth2.authorization.security;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -13,14 +13,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
-import tech.alexchen.daydayup.oauth2.authorization.custom.user.CustomUserDetailsService;
 
 /**
  * 自定义的 AuthenticationProvider，用于处理用户名密码登陆
  *
  * @author alexchen
  */
-public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+public class CustomUserDetailsAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     private static final String USER_NOT_FOUND_PASSWORD = "userNotFoundPassword";
 
@@ -38,7 +37,7 @@ public class CustomAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
     private UserDetailsPasswordService userDetailsPasswordService;
 
-    public CustomAuthenticationProvider() {
+    public CustomUserDetailsAuthenticationProvider() {
         setPasswordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder());
         setUserDetailsService(new CustomUserDetailsService());
     }

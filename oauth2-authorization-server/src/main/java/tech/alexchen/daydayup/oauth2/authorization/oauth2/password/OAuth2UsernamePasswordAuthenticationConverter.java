@@ -1,4 +1,4 @@
-package tech.alexchen.daydayup.oauth2.authorization.grant.password;
+package tech.alexchen.daydayup.oauth2.authorization.oauth2.password;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

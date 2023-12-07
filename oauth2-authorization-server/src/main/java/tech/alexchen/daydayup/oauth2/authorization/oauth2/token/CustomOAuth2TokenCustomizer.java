@@ -1,4 +1,4 @@
-package tech.alexchen.daydayup.oauth2.authorization.custom.token;
+package tech.alexchen.daydayup.oauth2.authorization.oauth2.token;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
