@@ -23,16 +23,19 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
     private final static Map<String, RegisteredClient> clientMap = new HashMap<>();
 
     static {
-        RegisteredClient client = RegisteredClient.withId("client")
-                .clientId("client")
-                .clientSecret("{noop}client")
+        RegisteredClient client = RegisteredClient.withId("zeus")
+                .clientId("zeus")
+                .clientSecret("{noop}zeus")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantTypes(authorizationGrantTypes -> {
                     authorizationGrantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
                     authorizationGrantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
                     authorizationGrantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
+                    authorizationGrantTypes.add(AuthorizationGrantType.PASSWORD);
+
                 })
                 .redirectUri("http://127.0.0.1:9999/login/oauth2/code/client")
+                .redirectUri("https://www.alexchen.tech")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
                 .scope("read")
@@ -43,7 +46,7 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
                         .accessTokenTimeToLive(Duration.ofHours(12))
                         .build())
                 .build();
-        clientMap.put("client", client);
+        clientMap.put("zeus", client);
     }
 
 
